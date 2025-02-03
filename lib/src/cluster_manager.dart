@@ -201,15 +201,15 @@ class ClusterManager<T extends ClusterItem> {
       {int level = 5}) {
     if (inputItems.isEmpty) return markerItems;
     String nextGeohash = inputItems[0].geohash.substring(0, level);
-
+    ClusterItem item = inputItems[0];
     List<T> items = inputItems
-        .where((p) => p.geohash.substring(0, level) == nextGeohash)
+        .where((p) => (p.geohash.substring(0, level) == nextGeohash && item.shouldCluster(p)))
         .toList();
 
     markerItems.add(Cluster<T>.fromItems(items));
 
     List<T> newInputList = List.from(
-        inputItems.where((i) => i.geohash.substring(0, level) != nextGeohash));
+        inputItems.where((i) => (i.geohash.substring(0, level) != nextGeohash || !item.shouldCluster(i))));
 
     return _computeClusters(newInputList, markerItems, level: level);
   }
